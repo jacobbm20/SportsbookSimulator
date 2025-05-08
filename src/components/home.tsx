@@ -1,10 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import LiveOddsBoard from "./LiveOddsBoard";
 import BetSlip from "./BetSlip";
 import UserDashboard from "./UserDashboard";
 import { Button } from "./ui/button";
 import { Dialog, DialogTrigger } from "./ui/dialog";
 import { Wallet, User } from "lucide-react";
+import { useAuth } from "../contexts/AuthContext";
 
 interface Bet {
   id: string;
@@ -24,6 +26,15 @@ export default function Home() {
   const [selectedBets, setSelectedBets] = useState<Bet[]>([]);
   const [virtualBalance, setVirtualBalance] = useState<number>(1000); // Starting with $1000 virtual currency
   const [dashboardOpen, setDashboardOpen] = useState<boolean>(false);
+  const { user, loading } = useAuth();
+  const navigate = useNavigate();
+
+  // Redirect to login if not authenticated
+  useEffect(() => {
+    if (!loading && !user) {
+      navigate("/login");
+    }
+  }, [user, loading, navigate]);
 
   const addToBetSlip = (bet: Bet) => {
     // Check if bet already exists in slip

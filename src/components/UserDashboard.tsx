@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useAuth } from "../contexts/AuthContext";
 import {
   Dialog,
   DialogContent,
@@ -23,21 +24,26 @@ import {
   ClockIcon,
   CheckIcon,
   XIcon,
+  LogOut,
 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface UserDashboardProps {
   isOpen?: boolean;
   onClose?: () => void;
+  virtualBalance?: number;
 }
 
 const UserDashboard = ({
   isOpen = true,
   onClose = () => {},
+  virtualBalance = 1000,
 }: UserDashboardProps) => {
   const [activeTab, setActiveTab] = useState("all");
+  const { user, logout } = useAuth();
 
-  // Mock data for the dashboard
-  const userBalance = 1250.75;
+  // Use provided virtual balance instead of mock data
+  const userBalance = virtualBalance;
   const bettingHistory = [
     {
       id: 1,
@@ -134,7 +140,12 @@ const UserDashboard = ({
       <DialogContent className="bg-gray-900 text-white max-w-5xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-2xl font-bold text-white">
-            User Dashboard
+            User Dashboard{" "}
+            {user && (
+              <span className="text-sm text-green-500 ml-2">
+                ({user.email})
+              </span>
+            )}
           </DialogTitle>
         </DialogHeader>
 
@@ -265,7 +276,18 @@ const UserDashboard = ({
         </Tabs>
 
         <div className="mt-6">
-          <h3 className="text-xl font-semibold mb-4">Performance Statistics</h3>
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-xl font-semibold">Performance Statistics</h3>
+            {user && (
+              <Button
+                onClick={() => logout()}
+                variant="destructive"
+                className="bg-red-600 hover:bg-red-700"
+              >
+                Logout
+              </Button>
+            )}
+          </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <Card className="bg-gray-800 border-gray-700">
               <CardHeader className="pb-2">
